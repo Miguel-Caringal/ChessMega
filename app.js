@@ -1,8 +1,6 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var app = require('express')();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -27,17 +25,16 @@ app.use('/users', usersRouter);
 // Seth's change
 app.use(function(req, res, next) {
   next(createError(404));
+
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+io.on('connection', function(socket){
+  console.log('a user connected');
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
 });
 
-module.exports = app;
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
