@@ -16,15 +16,14 @@ function updateGameState(gamestate) {
             name = gamestate[i][j];
 
             if(name){
-                document.getElementById(j + " " + i).src = "/images/pieces/" + name + ".png";
+                document.getElementById(j + "x" + i).src = "/images/pieces/" + name + ".png";
             } else {
-                document.getElementById(j + " " + i).src = "/images/pieces/blank.png";
+                document.getElementById(j + "x" + i).src = "/images/pieces/blank.png";
             }
         }
     }
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    //
     updateGameState(testinput);
 })
