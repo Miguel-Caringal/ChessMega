@@ -5,7 +5,6 @@ var games = [];
 var times = [];
 var moves = [];
 var players = [];
-var move = [4, 1, 4, 3];
 var gameID = 0;
 
 function timer() {
@@ -41,7 +40,6 @@ router.get('/', function (req, res) {
         times.push(0);
         moves.push(0);
 
-        
         if (moves.length == 2) {
             setInterval(timer, 1000);
         }
@@ -52,41 +50,41 @@ router.get('/', function (req, res) {
             games.push(startBoard);
 
             //tell player 1 game started
+            var player1 = idnum;
             io.to(socket.id).emit('gameState', games[gameID]);
-            io.to(socket.id).emit('init', startBoard, games.length - 1);
+            io.to(socket.id).emit('init', games.length - 1, player1);
 
             //tell player 2 game started
-            io.to(players[idnum - 1]).emit('gameState', games[gameID]);
-            io.to(players[idnum - 1]).emit('init', startBoard, games.length - 1);
+            var player2 = idnum - 1;
+            io.to(players[player2]).emit('gameState', games[gameID]);
+            io.to(players[player2]).emit('init', games.length - 1, player2);
+
+            gameID += 1;
         }
         
-        io.on('move', function (msg) {
-            console.log(msg)
+        socket.on('move', (gameId, num, move) => {
+
+            console.log(gameId, num, moves)
+
+            if (moves[num] != 0) {
+                games[gameId][move[3]][move[2]] = games[gameId][move[1]][move[0]];
+                games[gameId][move[1]][move[0]] = '';
+                // console.log(games)
+                moves[num] = 0;
+
+                if (num % 2 == 0) {
+                    moves[num + 1] = 1;
+                    io.to(players[num]).emit('gameState', games[gameId]);
+                    io.to(players[num + 1]).emit('gameState', games[gameId]);
+                } else {
+                    moves[num - 1] = 1;
+                    io.to(players[num]).emit('gameState', games[gameId]);
+                    io.to(players[num - 1]).emit('gameState', games[gameId]);
+                }
+            }
+
+            
         })
-        
-        // io.emit('chat message', "Player " + (idnum + 1) + " has joined.");
-        // var num = players.indexOf(socket.id)
-        // console.log(times);
-        // console.log(moves);
-        
-        // socket.on('chat message', function (msg) {
-
-        //     // console.log(msg);
-
-        //     if (moves[num] != 0) {
-        //         // console.log(games[gameID][move[2]][move[3]]);
-        //         games[gameID][move[3]][move[2]] = games[gameID][move[1]][move[0]];
-        //         games[gameID][move[1]][move[0]] = '';
-        //         // console.log(games)
-        //         moves[num] = 0;
-        //         if (num % 2 == 0) {
-        //             moves[num + 1] = 1;
-        //             io.to(`${players[num + 1]}`).emit('chat message', "Your opponent has played " + msg);
-        //         } else {
-        //             moves[num - 1] = 1;
-        //             io.to(`${players[num - 1]}`).emit('chat message', "Your opponent has played " + msg);
-        //         }
-        //     }
         // console.log(players.indexOf(socket.id));
         // var gamenum = "(Game: " + (Math.floor(players.indexOf(socket.id) / 2) + 1) + ") ";
         // var time = "(Time Used: " + Math.floor(times[num]) + ") ";
