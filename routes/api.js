@@ -1,10 +1,5 @@
-var app = require('express')();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
-
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
+var express = require('express');
+var router = express.Router();
 
 var games = [];
 var times = [];
@@ -12,6 +7,7 @@ var moves = [];
 var players = [];
 var move = [4,1,4,3];
 var gameID = 0;
+io = global.io
 
 function timer() {
   for (var i = 0; i < moves.length; i++) {
@@ -20,7 +16,6 @@ function timer() {
     }
   }
 }
-
 startBoard = [
   ['br','bn','bb','bq','bk','bb','bn','br'],
   ['bp','bp','bp','bp','bp','bp','bp','bp'],
@@ -32,7 +27,8 @@ startBoard = [
   ['wr','wn','wb','wq','wk','wb','wn','wr']
 ]
 
-io.on('connection', function(socket){
+global.io.on('connection', function(socket){
+
   players.push(socket.id);
   var idnum = players.indexOf(socket.id);
   times.push(0);
@@ -80,7 +76,9 @@ io.on('connection', function(socket){
   });
 });
 
-
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+router.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
 });
+
+module.exports = router;
+
