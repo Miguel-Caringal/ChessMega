@@ -12,9 +12,9 @@ block content
               - var rows = -1
               while rows < 7
                 if(rows + (cols % 2 == 0 ? 1 : 0)) % 2 == 0
-                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t1
-                    image.pover(src="/images/black/bp.png", alt="")
+                  td(onclick="clicked(this);").tile.t1
+                    image.pover(src="/images/pieces/blank.png", alt="", id=++rows + ' ' + cols)
                 else
-                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t2
-                    //- image.pover(src="/images/white/wk.png", alt="")
+                  td(onclick="clicked(this);").tile.t2
+                    image.pover(src="/images/pieces/blank.png", alt="", id=++rows + ' ' + cols)
                     
