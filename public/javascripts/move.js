@@ -2,23 +2,14 @@
 secondClick = false;
 fClickX = 0;
 fClickY = 0;
-
-
 function clicked(el){
-
-    
     var coord = el.id.split(" ")
     x = coord[0]
     y = coord[1]
-    
-    console.log(x + "   " + y)
 
     if(secondClick){
         if(legalMove()) {
-            //THIS IS WHERE SOCKET DATA SHOULD BE SENT
-            console.log(x + "   " + y + " " + fClickX + " " + fClickY)
-            // $.post("/api/move",
-            // [fClickX, fClickY, x, y]);
+            send(fClickX + " " + fClickY + " " + x + " " + y);
         }
         secondClick = false;
     } else {
