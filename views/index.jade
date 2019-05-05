@@ -1,5 +1,18 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .container.col-xs-12.col-sm-10.col-md-8.col-lg-5.col-centered
+    h2.text-center Welcome to #{title}
+    - var cols = -1
+    .table-responsive
+      table.table
+        tbody
+          while cols < 7
+            tr(class=++cols)
+              - var rows = -1
+              while rows < 7
+                td(class=++rows + ' ' + cols)
+                  if(rows + (cols % 2 == 0 ? 1 : 0)) % 2 == 0
+                    image(src="/images/lsquare.png", alt="").bsquare
+                  else
+                    image(src="/images/dsquare.png", alt="").bsquare
