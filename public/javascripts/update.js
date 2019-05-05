@@ -25,5 +25,6 @@ function updateGameState(gamestate) {
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
+    //
     updateGameState(testinput);
 })
