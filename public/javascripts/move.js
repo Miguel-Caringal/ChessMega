@@ -20,5 +20,6 @@ function clicked(el){
 }
 
 function legalMove(x1, y1, x2, y2){
+
     return true;
 }
