@@ -16,19 +16,44 @@ td {
   border: 0 !important;
 }
 
-div.t1 {
-  background: black;
-}
-
-div.t2 {
-  background: white;
-}
-
 .bsquare{
   width: 100%;
+  z-index: -1;
+}
+
+.pover{
+  width: 100%;
+  z-index: 1;
+  /* object-fit: fill; */
+}
+
+.bgtile{
+  width: 100%;
+  z-index: -1;
+  background-size: contain;
+  display:block;
+}
+
+.t1 {
+  background-image: url(/images/lsquare.png);
+}
+
+.t2 {
+  background-image: url(/images/dsquare.png);
 }
 
 .col-centered{
   float: none !important;
   margin: 0 auto;
+}
+
+td.tile{
+  z-index: -1;
+  background-size: contain;
+}
+
+span.cell{
+  display: block;
+	height: 100%;
+	width: 100%;
 }
