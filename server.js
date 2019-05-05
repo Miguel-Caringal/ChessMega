@@ -45,7 +45,12 @@ io.on('connection', function(socket){
     io.emit('chat message', "Game between Player " + idnum + " and Player " + (idnum + 1) + " has started.")
     moves[idnum - 1] = 1;
     games.push(startBoard);
-    io.to(socket.id).emit('initial information', startBoard, games.length-1);
+    /*
+    io.to(socket.id).emit('initial information', {
+      "startingState" : startBoard
+      "gamenumber" : games.length-1
+    }
+    */
   }
   var num = players.indexOf(socket.id)
   console.log(times);

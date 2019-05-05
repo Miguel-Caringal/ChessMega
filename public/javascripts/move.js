@@ -2,6 +2,7 @@
 secondClick = false;
 fClickX = 0;
 fClickY = 0;
+var socket = io()
 
 
 function clicked(el){
@@ -16,6 +17,12 @@ function clicked(el){
     if(secondClick){
         if(legalMove()) {
             //THIS IS WHERE SOCKET DATA SHOULD BE SENT
+            socket.emit ('Move Made', {
+                /*
+                "fClickX":fClickX
+                "fClickY":fClickY
+                */
+            })
             console.log(x + "   " + y + " " + fClickX + " " + fClickY)
             // $.post("/api/move",
             // [fClickX, fClickY, x, y]);
@@ -29,5 +36,6 @@ function clicked(el){
 }
 
 function legalMove(x1, y1, x2, y2){
+
     return true;
 }
