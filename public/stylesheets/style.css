@@ -1,8 +1,59 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+td {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+
+.bsquare{
+  width: 100%;
+  z-index: -1;
+}
+
+.pover{
+  width: 100%;
+  z-index: 1;
+  /* object-fit: fill; */
+}
+
+.bgtile{
+  width: 100%;
+  z-index: -1;
+  background-size: contain;
+  display:block;
+}
+
+.t1 {
+  background-image: url(/images/lsquare.png);
+}
+
+.t2 {
+  background-image: url(/images/dsquare.png);
+}
+
+.col-centered{
+  float: none !important;
+  margin: 0 auto;
+}
+
+td.tile{
+  z-index: -1;
+  background-size: contain;
+}
+
+span.cell{
+  display: block;
+	height: 100%;
+	width: 100%;
 }
