@@ -11,8 +11,10 @@ block content
             tr(class=++cols)
               - var rows = -1
               while rows < 7
-                td(class=++rows + ' ' + cols)
-                  if(rows + (cols % 2 == 0 ? 1 : 0)) % 2 == 0
-                    image(src="/images/lsquare.png", alt="").bsquare
-                  else
-                    image(src="/images/dsquare.png", alt="").bsquare
+                if(rows + (cols % 2 == 0 ? 1 : 0)) % 2 == 0
+                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t1
+                    image.pover(src="/images/black/bp.png", alt="")
+                else
+                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t2
+                    //- image.pover(src="/images/white/wk.png", alt="")
+                    
