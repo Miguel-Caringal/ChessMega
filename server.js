@@ -20,14 +20,13 @@ io.on('connection', function(socket){
     io.emit('chat message', "Game between Player " + idnum + " and Player " + (idnum + 1) + " has started.")
     moves[idnum - 1] = new Date();
   }
-  //console.log(games);
   var num = games.indexOf(socket.id)
   console.log(times);
   console.log(moves);
 
+  io.to(socket.id).emit('initial information', idnum);
 
   socket.on('chat message', function(msg){
-  	io.emit('gamenum', idnum);
     if (moves[num] != 0) {
       times[num] += ((new Date()) - moves[num]);
       moves[num] = 0;
