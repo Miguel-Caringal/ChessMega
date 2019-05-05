@@ -13,10 +13,17 @@ var testinput = [
 function updateGameState(gamestate) {
     for(var i = 0; i < gamestate.length; i++) {
         for(var j = 0; j < gamestate[i].length; j++) {
-            console.log(document.getElementById("0 0").innerHTML)
-            document.getElementById(i + " " + j).src = "/images/pieces/" + gamestate[i][j] + ".png"
+            name = gamestate[i][j];
+
+            if(name){
+                document.getElementById(j + " " + i).src = "/images/pieces/" + name + ".png";
+            } else {
+                document.getElementById(j + " " + i).src = "/images/pieces/blank.png";
+            }
         }
     }
 }
 
-updateGameState(testinput);
+document.addEventListener('DOMContentLoaded', (event) => {
+    updateGameState(testinput);
+})
