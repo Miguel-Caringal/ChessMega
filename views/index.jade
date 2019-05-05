@@ -1,20 +1,5 @@
 extends layout
 
 block content
-  .container.col-xs-12.col-sm-10.col-md-8.col-lg-5.col-centered
-    h2.text-center Welcome to #{title}
-    - var cols = -1
-    .table-responsive
-      table.table
-        tbody
-          while cols < 7
-            tr(class=++cols)
-              - var rows = -1
-              while rows < 7
-                if(rows + (cols % 2 == 0 ? 1 : 0)) % 2 == 0
-                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t1
-                    image.pover(src="/images/black/bp.png", alt="")
-                else
-                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t2
-                    //- image.pover(src="/images/white/wk.png", alt="")
-                    
+  h1= title
+  p Welcome to #{title}
