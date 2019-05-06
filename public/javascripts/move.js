@@ -9,17 +9,16 @@ function clicked(el){
 
     if(secondClick){
         if(legalMove()) {
-            send(fClickX + " " + fClickY + " " + x + " " + y);
+            send([fClickX, fClickY, x, y]);
         }
         secondClick = false;
     } else {
-        secondClick = true;
         fClickX = x
         fClickY = y
+        secondClick = true;
     }
 }
 
 function legalMove(x1, y1, x2, y2){
-
     return true;
 }

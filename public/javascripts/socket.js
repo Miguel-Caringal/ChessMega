@@ -1,11 +1,11 @@
-function send(msg) {
-    var socket = io();
-    console.log(msg);
-    socket.emit('move', msg);
-    return false;
-};
-
 var gameState;
+var gameId;
+var playerId;
+
+function send(move) {
+    var socket = io();
+    socket.emit('move', gameId, playerId, move);
+};
     
 $(function () {
     var socket = io();
@@ -14,7 +14,8 @@ $(function () {
         updateGameState(msg);
     });
 
-    socket.on('init', function(msg){
-        updateGameState(gameState);
+    socket.on('init', function(a, b){
+        gameId = a;
+        playerId = b;
     })
 });
