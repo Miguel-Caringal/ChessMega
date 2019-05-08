@@ -1,14 +1,13 @@
 var gameState;
 var gameId;
 var playerId;
+var socket = io();
 
 function send(move) {
-    var socket = io();
     socket.emit('move', gameId, playerId, move);
 };
     
 $(function () {
-    var socket = io();
     socket.on('gameState', function(msg){
         gameState = msg;
         updateGameState(msg);
