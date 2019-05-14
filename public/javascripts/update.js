@@ -10,3 +10,5 @@ function updateGameState(gamestate) {
         }
     }
 }
+
+// $(document).ready(function() { $('.form-popup').modal({ show: true, }) });
