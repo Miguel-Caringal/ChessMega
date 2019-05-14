@@ -1,20 +1,27 @@
 extends layout
 
 block content
-  .container.col-xs-12.col-sm-10.col-md-8.col-lg-5.col-centered
-    h2.text-center Welcome to #{title}
-    - var cols = -1
-    .table-responsive
-      table.table
-        tbody
-          while cols < 7
-            tr(class=++cols)
-              - var rows = -1
-              while rows < 7
-                if(rows + (cols % 2 == 0 ? 1 : 0)) % 2 == 0
-                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t1
-                    image.pover(src="/images/pieces/blank.png", id=rows + 'x' + cols)
-                else
-                  td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t2
-                    image.pover(src="/images/pieces/blank.png", id=rows + 'x' + cols)
+  include start
+  .container-fluid
+    .row-fluid
+      .col-xs-6.col-sm-1.col-lg-3.col-center
+        h2 Time
+      .col-xs-12.col-sm-10.col-md-8.col-lg-5.col-center
+        h2.text-center Welcome to #{title}
+        - var cols = -1
+        .table-responsive
+          table.table
+            tbody
+              while cols < 7
+                tr(class=++cols)
+                  - var rows = -1
+                  while rows < 7
+                    if(rows + (cols % 2 == 0 ? 1 : 0)) % 2 == 0
+                      td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t1
+                        image.pover(src="/images/pieces/blank.png", id=rows + 'x' + cols)
+                    else
+                      td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t2
+                        image.pover(src="/images/pieces/blank.png", id=rows + 'x' + cols)
+      .col-xs-6.col-sm-1.col-md-6.col-lg-3.col-center
+        h2 Time
                     
