@@ -7,14 +7,13 @@ function send(move) {
     socket.emit('move', gameId, playerId, move);
 };
     
-$(function () {
-    socket.on('gameState', function(msg){
-        gameState = msg;
-        updateGameState(msg);
-    });
 
-    socket.on('init', function(a, b){
-        gameId = a;
-        playerId = b;
-    })
+socket.on('gameState', function(msg){
+    gameState = msg;
+    updateGameState(msg);
 });
+
+socket.on('init', function(a, b){
+    gameId = a;
+    playerId = b;
+})
