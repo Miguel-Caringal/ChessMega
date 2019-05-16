@@ -1,3 +1,6 @@
+
+//TODO : IMPLEMENT AUTH TOKENS AND DON'T ALLOW A SINGLE USER TO CONNECT MORE THAN ONCE.
+
 var express = require('express');
 var router = express.Router();
 
@@ -10,11 +13,12 @@ var socketidtogameid = {};
 
 // Object to be passed between client and server
 class Game {
-    constructor(gamestate, gameid, white, black){
+    constructor(gamestate, gameid, white, black,turn){
         this.gamestate = gamestate;
         this.gameid = gameid;
         this.white = white;
         this.black = black;
+        this.turn = turn;
     }
 }
 
@@ -44,45 +48,51 @@ router.get('/', function (req, res) {
     // serve page
     res.render('index', { title: 'Chess Mega' });
 
-    // access io object stored in res
     var io = res.app.io;    
     io.on('connection', function (socket) {
+        console.log(socket.id+"has made a connection")
+
+        var check = false
 
         //Adds player to list of players
-        players.push(socket.id);
-        var idnum = players.indexOf(socket.id);
-        moves.push(0);
+        // This is a bandaid for right now. Reason is that while testing, having multiple socket connections from the same client confuses socket io (I think.) Will be fixed once multiple socket connections from the same client are not allowed. 
+        if (players.includes(socket.id) == false ){
+            players.push(socket.id);
+            check = true
+        }
 
-        // If Game will be created
+        //console.log(players)
+
+        // This is a bandaid for right now. Reason is that while testing, having multiple socket connections from the same client confuses socket io (I think.) Will be fixed once multiple socket connections from the same client are not allowed. 
+        if (socket.id in socketidtogameid == false && check == true){
+            console.log ("why?")
+            waiting_room.push(socket.id)
+        }
+
+        console.log(waiting_room)
+        // If Game will be created -> Room is full
         if (waiting_room.length == 2) {
-
-
             var gameID = 0
 
             // If there are no games currently
             if (games.length == 0){
-                games.push(new Game (startBoard, 0, waiting_room[0],waiting_room[1]))
+                games.push(new Game (startBoard, 0, waiting_room[0],waiting_room[1], white))
             }
             else{
-                var newSlot = True;
+                var newSlot = true;
                 for (i = 0; i<= games.length;i++){
                     if (games[i] == ''){
-                        games[i] = new Game (startBoard,i, waiting_room[0],waiting_room[1]);
+                        games[i] = new Game (startBoard,i, waiting_room[0],waiting_room[1], white);
                         newSlot = False;
                         gameID = i
                     }
                 }
                 // If there are no open game slots, make a new game
-                if (newSlot == True){
-                    games.push(new Game(startBoard,games.length, waiting_room[0],waiting_room[1]))
+                if (newSlot == true){
+                    games.push(new Game(startBoard,games.length, waiting_room[0],waiting_room[1], white))
                     gameID = games.length-1
                 }
             }
-
-            //moves[idnum - 1] = 1;
-            //games.push(startBoard);
-
-            console.log("hi")
 
             // Populating dictionary with socketids:gameids
             for (i = 0; i<= waiting_room.length;i++){
@@ -91,18 +101,11 @@ router.get('/', function (req, res) {
 
             io.to(waiting_room[0]).emit('gameState', games[gameID]);
             io.to(waiting_room[1]).emit('gameState', games[gameID]);
-
+            console.log(socketidtogameid)
             waiting_room = []
         }
-        else {
-            waiting_room.push(socket.id)
-        }
         
-        socket.on('move', (gameId, num, move) => {
-
-            //console.log("hi")
-
-            //console.log(gameId, num, moves)
+        socket.on('move', (updatedGame, move) => {
 
             if (moves[num] != 0) {
                 games[gameId][move[3]][move[2]] = games[gameId][move[1]][move[0]];
