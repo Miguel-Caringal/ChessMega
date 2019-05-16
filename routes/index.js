@@ -1,12 +1,24 @@
 var express = require('express');
 var router = express.Router();
 
+// Globals
 var games = [];
-var times = [];
 var moves = [];
 var players = [];
-var gameID = 0;
+var waiting_room = [];
+var socketidtogameid = {};
 
+// Object to be passed between client and server
+class Game {
+    constructor(gamestate, gameid, white, black){
+        this.gamestate = gamestate;
+        this.gameid = gameid;
+        this.white = white;
+        this.black = black;
+    }
+}
+
+/*
 function timer() {
     for (var i = 0; i < moves.length; i++) {
         if (moves[i] == 1) {
@@ -14,6 +26,7 @@ function timer() {
         }
     }
 }
+*/
 
 startBoard = [
     ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
@@ -35,36 +48,61 @@ router.get('/', function (req, res) {
     var io = res.app.io;    
     io.on('connection', function (socket) {
 
+        //Adds player to list of players
         players.push(socket.id);
         var idnum = players.indexOf(socket.id);
-        times.push(0);
         moves.push(0);
 
-        if (moves.length == 2) {
-            setInterval(timer, 1000);
+        // If Game will be created
+        if (waiting_room.length == 2) {
+
+
+            var gameID = 0
+
+            // If there are no games currently
+            if (games.length == 0){
+                games.push(new Game (startBoard, 0, waiting_room[0],waiting_room[1]))
+            }
+            else{
+                var newSlot = True;
+                for (i = 0; i<= games.length;i++){
+                    if (games[i] == ''){
+                        games[i] = new Game (startBoard,i, waiting_room[0],waiting_room[1]);
+                        newSlot = False;
+                        gameID = i
+                    }
+                }
+                // If there are no open game slots, make a new game
+                if (newSlot == True){
+                    games.push(new Game(startBoard,games.length, waiting_room[0],waiting_room[1]))
+                    gameID = games.length-1
+                }
+            }
+
+            //moves[idnum - 1] = 1;
+            //games.push(startBoard);
+
+            console.log("hi")
+
+            // Populating dictionary with socketids:gameids
+            for (i = 0; i<= waiting_room.length;i++){
+                socketidtogameid[waiting_room[i]] = gameID;
+            }
+
+            io.to(waiting_room[0]).emit('gameState', games[gameID]);
+            io.to(waiting_room[1]).emit('gameState', games[gameID]);
+
+            waiting_room = []
         }
-        
-        if (idnum % 2 == 1) {
-            // io.emit('chat message', "Game between Player " + idnum + " and Player " + (idnum + 1) + " has started.")
-            moves[idnum - 1] = 1;
-            games.push(startBoard);
-
-            //tell player 1 game started
-            var player1 = idnum;
-            io.to(socket.id).emit('gameState', games[gameID]);
-            io.to(socket.id).emit('init', games.length - 1, player1);
-
-            //tell player 2 game started
-            var player2 = idnum - 1;
-            io.to(players[player2]).emit('gameState', games[gameID]);
-            io.to(players[player2]).emit('init', games.length - 1, player2);
-
-            gameID += 1;
+        else {
+            waiting_room.push(socket.id)
         }
         
         socket.on('move', (gameId, num, move) => {
 
-            console.log(gameId, num, moves)
+            //console.log("hi")
+
+            //console.log(gameId, num, moves)
 
             if (moves[num] != 0) {
                 games[gameId][move[3]][move[2]] = games[gameId][move[1]][move[0]];
@@ -82,7 +120,6 @@ router.get('/', function (req, res) {
                     io.to(players[num - 1]).emit('gameState', games[gameId]);
                 }
             }
-
             
         })
         // console.log(players.indexOf(socket.id));

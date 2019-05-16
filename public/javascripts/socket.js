@@ -1,6 +1,5 @@
 var gameState;
 var gameId;
-var playerId;
 var socket = io();
 
 function send(move) {
@@ -8,12 +7,8 @@ function send(move) {
 };
     
 
-socket.on('gameState', function(msg){
-    gameState = msg;
-    updateGameState(msg);
+socket.on('gameState', function(Game){
+	gameState = Game.gamestate
+	gameId = Game.gameid
+    updateGameState(gameState);
 });
-
-socket.on('init', function(a, b){
-    gameId = a;
-    playerId = b;
-})
