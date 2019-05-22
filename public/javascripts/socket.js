@@ -5,7 +5,6 @@ var updatedGame;
 socket.on('gameState', function(Game){
 	updatedGame = Game
 	gameState = Game.gamestate
-	debugger;
     updateGameState(gameState);
 });
 

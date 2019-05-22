@@ -1,6 +1,4 @@
-
 //TODO : IMPLEMENT AUTH TOKENS AND DON'T ALLOW A SINGLE USER TO CONNECT MORE THAN ONCE.
-//TODO: Fix 2 move calls on black
 
 var express = require('express');
 var router = express.Router();
@@ -51,7 +49,7 @@ router.get('/', function (req, res) {
     res.render('index', { title: 'Chess Mega' });
 
     var io = res.app.io;    
-    io.on('connection', function (socket) {
+    io.once('connection', function (socket) {
         console.log(socket.id+"has made a connection")
 
         var check = false
@@ -62,8 +60,6 @@ router.get('/', function (req, res) {
             players.push(socket.id);
             check = true
         }
-
-        //console.log(players)
 
         // This is a bandaid for right now. Reason is that while testing, having multiple socket connections from the same client confuses socket io (I think.) Will be fixed once multiple socket connections from the same client are not allowed. 
         if (socket.id in socketidtogameid == false && check == true){
@@ -108,6 +104,8 @@ router.get('/', function (req, res) {
         
         // Processing Player Moves
         socket.on('move', (updatedGame, move) => {
+            console.log(updatedGame.turn)
+            console.log(socket.id)
 
             // If a player tries to make two moves in a row
             if (updatedGame.turn == "white" && socket.id == updatedGame.black) {
@@ -127,19 +125,23 @@ router.get('/', function (req, res) {
 
             console.log(games[updatedGame.gameid].gamestate)
 
-            console.log("====================")
-
             // Switching Who's turn it is
             if (updatedGame.turn == "white"){
                 games[updatedGame.gameid].turn = "black";
             }
             else if (updatedGame.turn == "black"){
                 games[updatedGame.gameid].turn = "white";
+                console.log("This should be firing")
             }
+
+
+
 
             // Sending new gamestate
             io.to(games[updatedGame.gameid].white).emit('gameState', games[updatedGame.gameid])
             io.to(games[updatedGame.gameid].black).emit('gameState', games[updatedGame.gameid])
+
+            console.log("====================")
             
         })
     });
