@@ -1,19 +1,20 @@
 var gameState;
-var gameId;
-var playerId;
 var socket = io();
+var updatedGame;
 
-function send(move) {
-    socket.emit('move', gameId, playerId, move);
-};
-    
-
-socket.on('gameState', function(msg){
-    gameState = msg;
-    updateGameState(msg);
+socket.on('gameState', function(Game){
+	updatedGame = Game
+	gameState = Game.gamestate
+    updateGameState(gameState);
 });
 
-socket.on('init', function(a, b){
-    gameId = a;
-    playerId = b;
+socket.on('gameOver', function(result){
+	if (result == "win"){
+		document.getElementById("gameResult").innerHTML = "You Win!";
+	}
+
 })
+
+function send(move) {
+    socket.emit('move', updatedGame , move);
+}; 
