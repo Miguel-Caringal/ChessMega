@@ -8,6 +8,13 @@ socket.on('gameState', function(Game){
     updateGameState(gameState);
 });
 
+socket.on('gameOver', function(result){
+	if (result == "win"){
+		document.getElementById("gameResult").innerHTML = "You Win!";
+	}
+
+})
+
 function send(move) {
     socket.emit('move', updatedGame , move);
 }; 

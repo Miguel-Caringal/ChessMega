@@ -79,8 +79,10 @@ router.get('/', function (req, res) {
                 var newSlot = true;
                 for (i = 0; i<= games.length;i++){
                     if (games[i] == ''){
+                        console.log("this excecuted")
                         games[i] = new Game (startBoard,i, waiting_room[0],waiting_room[1], "white");
-                        newSlot = False;
+                        console.log(i)
+                        newSlot = false;
                         gameID = i
                     }
                 }
@@ -90,7 +92,8 @@ router.get('/', function (req, res) {
                     gameID = games.length-1;
                 }
             }
-
+            console.log(games[gameID].gamestate)
+            console.log(gameID)
             // Populating dictionary with socketids:gameids
             for (i = 0; i<= waiting_room.length;i++){
                 socketidtogameid[waiting_room[i]] = gameID;
@@ -120,10 +123,10 @@ router.get('/', function (req, res) {
             // Updating the board with the new move
             console.log(move)
 
-            games[updatedGame.gameid].gamestate[move[3]][move[2]] = games[updatedGame.gameid].gamestate[move[1]][move[0]]
+            games[updatedGame.gameid].gamestate[move[3]][move[2]] = games[updatedGame.gameid].gamestate[move[1]][move[0]];
             games[updatedGame.gameid].gamestate[move[1]][move[0]] = '';
 
-            console.log(games[updatedGame.gameid].gamestate)
+            console.log(games[updatedGame.gameid].gamestate);
 
             // Switching Who's turn it is
             if (updatedGame.turn == "white"){
@@ -131,19 +134,34 @@ router.get('/', function (req, res) {
             }
             else if (updatedGame.turn == "black"){
                 games[updatedGame.gameid].turn = "white";
-                console.log("This should be firing")
             }
-
-
-
-
             // Sending new gamestate
-            io.to(games[updatedGame.gameid].white).emit('gameState', games[updatedGame.gameid])
-            io.to(games[updatedGame.gameid].black).emit('gameState', games[updatedGame.gameid])
-
-            console.log("====================")
+            io.to(games[updatedGame.gameid].white).emit('gameState', games[updatedGame.gameid]);
+            io.to(games[updatedGame.gameid].black).emit('gameState', games[updatedGame.gameid]);
             
         })
+        // If someone RQs/DCs
+        socket.on('disconnect', function(){
+            var winner;
+            var loser;
+
+            if (socket.id == games[socketidtogameid[socket.id]].black){
+                winner = games[socketidtogameid[socket.id]].white;
+                loser = games[socketidtogameid[socket.id]].black
+            }
+            else{
+                winner = games[socketidtogameid[socket.id]].black;
+                loser = games[socketidtogameid[socket.id]].white
+            }
+            console.log(winner)
+            io.to(winner).emit('gameOver',"win");
+            // This might not be necessary, will be fixed in future update.
+            io.to(loser).emit('gameOver',"lose");
+            games[socketidtogameid[socket.id]] = ''
+            delete socketidtogameid[winner];
+            delete socketidtogameid[loser];
+            console.log(socketidtogameid)
+        });
     });
 });
 
