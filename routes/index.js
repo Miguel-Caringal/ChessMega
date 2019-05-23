@@ -1,6 +1,4 @@
-//TODO : IMPLEMENT AUTH TOKENS AND DON'T ALLOW A SINGLE USER TO CONNECT MORE THAN ONCE.
-
-var express = require('express');
+const express = require('express');
 var router = express.Router();
 
 // Globals
@@ -31,42 +29,39 @@ function timer() {
 }
 */
 
-// Initial Board State
-startBoard = [
-    ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
-    ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', '', ''],
-    ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
-    ['wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr']
-]
-
 router.get('/', function (req, res) {
+
+        // Initial Board State
+        startBoard = [
+        ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
+        ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
+        ['wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr']
+    ]
 
     // serve page
     res.render('index', { title: 'Chess Mega' });
 
     var io = res.app.io;    
     io.once('connection', function (socket) {
-        console.log(socket.id+"has made a connection")
+        //console.log(socket.id+"has made a connection")
 
         var check = false
 
         //Adds player to list of players
-        // This is a bandaid for right now. Reason is that while testing, having multiple socket connections from the same client confuses socket io (I think.) Will be fixed once multiple socket connections from the same client are not allowed. 
         if (players.includes(socket.id) == false ){
             players.push(socket.id);
             check = true
         }
 
-        // This is a bandaid for right now. Reason is that while testing, having multiple socket connections from the same client confuses socket io (I think.) Will be fixed once multiple socket connections from the same client are not allowed. 
         if (socket.id in socketidtogameid == false && check == true){
             waiting_room.push(socket.id);
         }
 
-        //console.log(waiting_room)
         // If Game will be created -> Room is full
         if (waiting_room.length == 2) {
             var gameID = 0;
@@ -79,10 +74,12 @@ router.get('/', function (req, res) {
                 var newSlot = true;
                 for (i = 0; i<= games.length;i++){
                     if (games[i] == ''){
-                        console.log("this excecuted")
+                        //console.log(games[i].gamestate)
+                        console.log(startBoard)
                         games[i] = new Game (startBoard,i, waiting_room[0],waiting_room[1], "white");
-                        console.log(i)
+                        console.log(startBoard)
                         newSlot = false;
+                        //console.log(games[i].gamestate)
                         gameID = i
                     }
                 }
@@ -92,8 +89,6 @@ router.get('/', function (req, res) {
                     gameID = games.length-1;
                 }
             }
-            console.log(games[gameID].gamestate)
-            console.log(gameID)
             // Populating dictionary with socketids:gameids
             for (i = 0; i<= waiting_room.length;i++){
                 socketidtogameid[waiting_room[i]] = gameID;
@@ -107,26 +102,18 @@ router.get('/', function (req, res) {
         
         // Processing Player Moves
         socket.on('move', (updatedGame, move) => {
-            console.log(updatedGame.turn)
-            console.log(socket.id)
 
             // If a player tries to make two moves in a row
             if (updatedGame.turn == "white" && socket.id == updatedGame.black) {
-                console.log("It is white's turn")
                 return;
             }
             else if (updatedGame.turn == "black" && socket.id == updatedGame.white){
-                console.log("It is black's turn")
                 return;
             }
 
             // Updating the board with the new move
-            console.log(move)
-
             games[updatedGame.gameid].gamestate[move[3]][move[2]] = games[updatedGame.gameid].gamestate[move[1]][move[0]];
             games[updatedGame.gameid].gamestate[move[1]][move[0]] = '';
-
-            console.log(games[updatedGame.gameid].gamestate);
 
             // Switching Who's turn it is
             if (updatedGame.turn == "white"){
@@ -141,26 +128,26 @@ router.get('/', function (req, res) {
             
         })
         // If someone RQs/DCs
+        // MAKE SURE THAT THIS DOSEN'T TRIGGER AFTER A GAME
         socket.on('disconnect', function(){
             var winner;
             var loser;
 
             if (socket.id == games[socketidtogameid[socket.id]].black){
                 winner = games[socketidtogameid[socket.id]].white;
-                loser = games[socketidtogameid[socket.id]].black
+                loser = games[socketidtogameid[socket.id]].black;
             }
             else{
                 winner = games[socketidtogameid[socket.id]].black;
-                loser = games[socketidtogameid[socket.id]].white
+                loser = games[socketidtogameid[socket.id]].white;
             }
-            console.log(winner)
+
             io.to(winner).emit('gameOver',"win");
             // This might not be necessary, will be fixed in future update.
             io.to(loser).emit('gameOver',"lose");
-            games[socketidtogameid[socket.id]] = ''
+            games[socketidtogameid[socket.id]] = '';
             delete socketidtogameid[winner];
             delete socketidtogameid[loser];
-            console.log(socketidtogameid)
         });
     });
 });
