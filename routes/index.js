@@ -1,9 +1,10 @@
 const express = require('express');
 var router = express.Router();
+var moves = require('./moves');
+
 
 // Globals
 var games = [];
-var moves = [];
 var players = [];
 var waiting_room = [];
 var socketidtogameid = {};
@@ -111,6 +112,9 @@ router.get('/', function (req, res) {
                 return;
             }
 
+            var islegal = moves.checkmove(updatedGame,move)
+
+
             // Updating the board with the new move
             games[updatedGame.gameid].gamestate[move[3]][move[2]] = games[updatedGame.gameid].gamestate[move[1]][move[0]];
             games[updatedGame.gameid].gamestate[move[1]][move[0]] = '';
@@ -127,27 +131,33 @@ router.get('/', function (req, res) {
             io.to(games[updatedGame.gameid].black).emit('gameState', games[updatedGame.gameid]);
             
         })
+
         // If someone RQs/DCs
-        // MAKE SURE THAT THIS DOSEN'T TRIGGER AFTER A GAME
+        // TODO: ADD RECONNECT/TIMEOUT FEATURES
         socket.on('disconnect', function(){
-            var winner;
-            var loser;
 
-            if (socket.id == games[socketidtogameid[socket.id]].black){
-                winner = games[socketidtogameid[socket.id]].white;
-                loser = games[socketidtogameid[socket.id]].black;
-            }
-            else{
-                winner = games[socketidtogameid[socket.id]].black;
-                loser = games[socketidtogameid[socket.id]].white;
-            }
+            // If the user was in the game and DCs, then the other user should win
+            if (socket.id in socketidtogameid) {
+                console.log(socketidtogameid)
+                var winner;
+                var loser;
 
-            io.to(winner).emit('gameOver',"win");
-            // This might not be necessary, will be fixed in future update.
-            io.to(loser).emit('gameOver',"lose");
-            games[socketidtogameid[socket.id]] = '';
-            delete socketidtogameid[winner];
-            delete socketidtogameid[loser];
+                if (socket.id == games[socketidtogameid[socket.id]].black){
+                    winner = games[socketidtogameid[socket.id]].white;
+                    loser = games[socketidtogameid[socket.id]].black;
+                }
+                else{
+                    winner = games[socketidtogameid[socket.id]].black;
+                    loser = games[socketidtogameid[socket.id]].white;
+                }
+
+                io.to(winner).emit('gameOver',"win");
+                // Not needed for now.
+                //io.to(loser).emit('gameOver',"lose");
+                games[socketidtogameid[socket.id]] = '';
+                delete socketidtogameid[winner];
+                delete socketidtogameid[loser];
+            }
         });
     });
 });
