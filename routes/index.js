@@ -20,6 +20,8 @@ class Game {
     }
 }
 
+// Add timer
+
 /*
 function timer() {
     for (var i = 0; i < moves.length; i++) {
