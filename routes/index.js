@@ -20,6 +20,8 @@ class Game {
     }
 }
 
+// Add timer
+
 /*
 function timer() {
     for (var i = 0; i < moves.length; i++) {
@@ -114,22 +116,23 @@ router.get('/', function (req, res) {
 
             var islegal = moves.checkmove(updatedGame,move)
 
+            if (islegal == true){
+                // Updating the board with the new move
+                games[updatedGame.gameid].gamestate[move[3]][move[2]] = games[updatedGame.gameid].gamestate[move[1]][move[0]];
+                games[updatedGame.gameid].gamestate[move[1]][move[0]] = '';
 
-            // Updating the board with the new move
-            games[updatedGame.gameid].gamestate[move[3]][move[2]] = games[updatedGame.gameid].gamestate[move[1]][move[0]];
-            games[updatedGame.gameid].gamestate[move[1]][move[0]] = '';
+                // Switching Who's turn it is
+                if (updatedGame.turn == "white"){
+                    games[updatedGame.gameid].turn = "black";
+                }
+                else if (updatedGame.turn == "black"){
+                    games[updatedGame.gameid].turn = "white";
+                }
+                // Sending new gamestate
+                io.to(games[updatedGame.gameid].white).emit('gameState', games[updatedGame.gameid]);
+                io.to(games[updatedGame.gameid].black).emit('gameState', games[updatedGame.gameid]);
+            }
 
-            // Switching Who's turn it is
-            if (updatedGame.turn == "white"){
-                games[updatedGame.gameid].turn = "black";
-            }
-            else if (updatedGame.turn == "black"){
-                games[updatedGame.gameid].turn = "white";
-            }
-            // Sending new gamestate
-            io.to(games[updatedGame.gameid].white).emit('gameState', games[updatedGame.gameid]);
-            io.to(games[updatedGame.gameid].black).emit('gameState', games[updatedGame.gameid]);
-            
         })
 
         // If someone RQs/DCs
