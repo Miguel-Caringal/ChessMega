@@ -55,6 +55,7 @@ router.get('/', function (req, res) {
 
         var check = false
 
+        // This is probably not needed now due to bugfixing multiple connections from one client
         //Adds player to list of players
         if (players.includes(socket.id) == false ){
             players.push(socket.id);

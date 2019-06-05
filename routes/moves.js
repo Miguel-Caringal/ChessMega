@@ -17,23 +17,26 @@ function checkmove (gameobj, oldmove) {
   if (game[move[0]][move[1]].indexOf("r")>-1){
       islegal = isRook(game,move);
   }
-  /*
-  if (game[move[0]][move[1]].indexOf("k")>-1){
-      islegal = isKnight();
+  if (game[move[0]][move[1]].indexOf("n")>-1){
+      islegal = isKnight(game,move);
   }
-  if (game[move[0]][move[1]].indexOf("b")>-1){
-      islegal = isBishop();
-  }
-  if (game[move[0]][move[1]].indexOf("p")>-1){
-      islegal = isPawn();
-  }
-  if (game[move[0]][move[1]].indexOf("k")>-1){
-      islegal = isKing();
+  if (game[move[0]][move[1]][1] == "b"){      
+      islegal = isBishop(game,move);
   }
   if (game[move[0]][move[1]].indexOf("q")>-1){
-      islegal = isQueen();
+    islegal = isQueen(game,move);
+  }
+  if (game[move[0]][move[1]].indexOf("p")>-1){
+    islegal = isPawn(game,move);
+  }
+  /*
+  if (game[move[0]][move[1]].indexOf("k")>-1){
+      islegal = isKing(game,move);
   }
   */
+ if (game[move[0]][move[1]]==''){
+    return false;
+ }
 
   // isstale();
 
@@ -89,7 +92,6 @@ function isRook(game,move) {
           // here, return piece that was blocking for ischeck function
           for (var i = move[0]-1;i>move[2];i--){
               if (game[i][move[1]] != '' ){
-                console.log(game[i][move[1]])
                   return false
               }
           }
@@ -111,6 +113,155 @@ function isRook(game,move) {
   }
   return true
 };
+
+function isKnight (game,move){
+    if (Math.abs(move[0]-move[2]) == 2 && Math.abs(move[1]-move[3]) == 1) {
+        if (sameColor(game,move)){
+            return false;
+        }
+        return true;
+    }
+    if (Math.abs(move[1]-move[3]) == 2 && Math.abs(move[0]-move[2]) == 1) {
+        if (sameColor(game,move)){
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+function isBishop (game,move){
+    
+    if (Math.abs(move[0]-move[2]) != Math.abs(move[1]-move[3])){
+        return false;
+    }
+    if (move[0] < move [2] && move[1] < move[3]){
+        for (var i = 1;i<move[2]-move[0];i++){
+            if (game[i+move[0]][i+move[1]] != ''){
+                return false;
+            }
+        }
+        if (sameColor(game,move)){
+            return false
+        }
+    }
+    else if (move[0] > move [2] && move[1] > move[3]){
+        for (var i = 1;i<move[2]-move[0];i++){
+            if (game[move[0]-1][move[1]-1] != ''){
+                return false;
+            }
+        }
+        if (sameColor(game,move)){
+            return false
+        }
+    }
+    else if (move[0] > move [2] && move[1] < move[3]){
+        for (var i = 1; i<move[0]-move[2];i++){
+            if (game[move[0]-1][move[1]+1] != ''){
+                return false;
+            }
+        }
+        if (sameColor(game,move)){
+            return false
+        }
+    }
+    else if (move[0] < move [2] && move[1] > move[3]){
+        for (var i = 1; i<move[2]-move[0];i++){
+            if (game[move[0]+1][move[1]-1] != ''){
+                return false;
+            }
+        }
+        if (sameColor(game,move)){
+            return false
+        }
+    }
+    return true;
+}
+
+function isQueen(game,move){
+    // if bishop like move
+    if (Math.abs(move[0]-move[2]) == Math.abs(move[1]-move[3])){
+        return isBishop(game,move);
+    }
+    // if rook like move
+    else if (move[0] == move [2] || move[1] == move[3]){
+        return isRook(game,move);
+    }
+}
+
+function isPawn(game,move){
+    if (Math.abs(move[0]-move[2])>2){
+        return false;
+    }
+
+    var color;
+    if (game[move[0]][move[1]][0] == "w"){
+        color = "w";
+    }
+    else{
+        color = "b";
+    }
+    // White Pawn Moving Forward by One Square
+    if ((move[0]-move[2] == 1) && move[1] == move[3]){
+        if (game[move[2]][move[3]] == '' && color == "w"){
+            return true;
+        }
+    }
+    // Black Pawn Moving Forward by One Square
+    if ((move[0]-move[2] == -1) && move[1] == move[3]){
+        if (game[move[2]][move[3]] == '' && color == "b"){
+            return true;
+        }
+    }
+    // White Pawn Moving Forward by Two Squares
+    if ((move[0]-move[2] == 2) && move[1] == move[3]){
+        if (move[0] != 6){
+            return false;
+        }
+        for (var i = 5; i >= 4 ; i--){
+            if (game[i][move[1]] != ''){
+                return false;
+            }
+        }
+        return true;
+    }
+    // Black Pawn Moving Forward by Two Squares
+    if ((move[0]-move[2] == -2) && move[1] == move[3]){
+        if (move[0] != 1){
+            return false;
+        }
+        for (var i = 2; i >= 3 ; i++){
+            if (game[i][move[1]] != ''){
+                return false;
+            }
+        }
+        return true;
+    }
+    // white pawn capturing
+    if (move[0]-move[2] == 1 && move[1]-move[3] == 1 && color == "w"){
+        if (game[move[2]][move[3]] != '' && game[move[2]][move[3]][0] != "w"){
+            return true;
+        }
+    }
+    if (move[0]-move[2] == 1 && move[1]-move[3] == -1 && color == "w"){
+        if (game[move[2]][move[3]] != '' && game[move[2]][move[3]][0] != "w"){
+            return true;
+        }
+    }
+    //black pawn capturing
+    if (move[0]-move[2] == -1 && move[1]-move[3] == 1 && color == "b"){
+        if (game[move[2]][move[3]] != '' && game[move[2]][move[3]][0] != "b"){
+            return true;
+        }
+    }
+    if (move[0]-move[2] == -1 && move[1]-move[3] == -1 && color == "b"){
+        if (game[move[2]][move[3]] != '' && game[move[2]][move[3]][0] != "b"){
+            return true;
+        }
+    }
+    return false;
+}
+
 
 module.exports = {
    checkmove,
