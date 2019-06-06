@@ -20,6 +20,25 @@ class Game {
     }
 }
 
+function flipboard (board){
+    var newboard = [] ,temp = [];
+    for (var i = 7; i>=0; i--){
+        for (var j = 7; j>= 0; j--){
+            temp.push(board[i][j])
+        }
+        newboard.push(temp)
+        temp = []
+    }  
+    return newboard;
+};
+
+function flipmove (move){
+    for (var i =0; i <=3; i++){
+        move[i] = 7-move[i];
+    }
+    return move;
+};
+
 // Add timer
 
 /*
@@ -34,16 +53,16 @@ function timer() {
 
 router.get('/', function (req, res) {
 
-        // Initial Board State
-        startBoard = [
-        ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
-        ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
-        ['', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', ''],
-        ['', '', '', '', '', '', '', ''],
-        ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
-        ['wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr']
+    // Initial Board State
+    startBoard = [
+    ['br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br'],
+    ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['', '', '', '', '', '', '', ''],
+    ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
+    ['wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr']
     ]
 
     // serve page
@@ -98,14 +117,20 @@ router.get('/', function (req, res) {
                 socketidtogameid[waiting_room[i]] = gameID;
             }
 
+            // Push to White
             io.to(waiting_room[0]).emit('gameState', games[gameID]);
+            io.to(waiting_room[0]).emit('init', "white");
+            // Push to Black
+            games[gameID].gamestate = flipboard(games[gameID].gamestate);
             io.to(waiting_room[1]).emit('gameState', games[gameID]);
-            //console.log(socketidtogameid)
+            io.to(waiting_room[1]).emit('init', "black");
+            games[gameID].gamestate = flipboard(games[gameID].gamestate);
             waiting_room = []
         }
         
         // Processing Player Moves
         socket.on('move', (updatedGame, move) => {
+            var returnvalues = []
 
             // If a player tries to make two moves in a row
             if (updatedGame.turn == "white" && socket.id == updatedGame.black) {
@@ -115,12 +140,30 @@ router.get('/', function (req, res) {
                 return;
             }
 
-            var islegal = moves.checkmove(updatedGame,move)
+            // Flipping board and move
+            if (socket.id == updatedGame.black){
+                updatedGame.gamestate = flipboard(updatedGame.gamestate); 
+                move = flipmove(move);
+            }
+
+            returnvalues = moves.checkmove(updatedGame,move)
+
+            islegal = returnvalues[0];
+            promote = returnvalues[1];
 
             if (islegal == true){
                 // Updating the board with the new move
                 games[updatedGame.gameid].gamestate[move[3]][move[2]] = games[updatedGame.gameid].gamestate[move[1]][move[0]];
                 games[updatedGame.gameid].gamestate[move[1]][move[0]] = '';
+                
+                if (promote!= ""){
+                    if (promote[2] == "w"){
+                        games[updatedGame.gameid].gamestate[promote[0]][promote[1]] = "wq";
+                    }
+                    else if (promote[2] == "b"){
+                        games[updatedGame.gameid].gamestate[promote[0]][promote[1]] = "bq";
+                    }
+                }
 
                 // Switching Who's turn it is
                 if (updatedGame.turn == "white"){
@@ -131,7 +174,11 @@ router.get('/', function (req, res) {
                 }
                 // Sending new gamestate
                 io.to(games[updatedGame.gameid].white).emit('gameState', games[updatedGame.gameid]);
+
+                // Flipping for black
+                games[updatedGame.gameid].gamestate= flipboard(games[updatedGame.gameid].gamestate); 
                 io.to(games[updatedGame.gameid].black).emit('gameState', games[updatedGame.gameid]);
+                games[updatedGame.gameid].gamestate= flipboard(games[updatedGame.gameid].gamestate); 
             }
 
         })
