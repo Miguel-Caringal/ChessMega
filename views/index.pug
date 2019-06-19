@@ -3,11 +3,8 @@ extends layout
 block content
   include start
   .container-fluid
-    .row-fluid
-      .col-xs-6.col-sm-1.col-lg-3.col-center
-        h2 Time
-      .col-xs-12.col-sm-10.col-md-8.col-lg-5.col-center
-        h2.text-center Welcome to #{title}
+    .row.justify-content-center
+      .col-12.col-sm-10.col-md-8.col-lg-5.center
         h2.text-center#turn Game has not started
         - var cols = -1
         h2.text-center#color
@@ -24,6 +21,5 @@ block content
                     else
                       td(id=++rows + ' ' + cols, onclick="clicked(this);").tile.t2
                         image.pover(src="/images/pieces/blank.png", id=rows + 'x' + cols)
-      .col-xs-6.col-sm-1.col-md-6.col-lg-3.col-center
-        h2#gameResult
+      h2#gameResult
                     
