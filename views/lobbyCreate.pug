@@ -1,0 +1,80 @@
+.container-fluid
+.row-fluid
+  .modal.fade#lobby-create(tabindex="-1", role="dialog")
+    .modal-dialog.modal-dialog-centered
+      .modal-content
+        .modal-header.center-justify
+          h5.modal-title Create a lobby
+        .modal-body
+
+          // preset picker
+          .row.align-items-center.justify-content-center.my-3
+            select.selectpicker.col-7.col-sm-5#preset
+              - var i = 1
+              option(value=i++) Custom
+              optgroup(label="Bullet")
+                option(value=i++) 1 + 0
+                option(value=i++) 2 + 1
+              optgroup(label="Blitz")
+                option(value=i++) 3 + 0
+                option(value=i++) 3 + 2
+                option(value=i++) 5 + 0
+                option(value=i++) 5 + 5
+              optgroup(label="Standard")
+                option(value=i++) 10 + 0
+                option(value=i++) 15 + 15
+
+          // custom settings
+          .row.align-items-center.justify-content-center.my-3#variant
+            h6.col-3.col-md-3.my-auto Variant
+            select.selectpicker.col-8.col-sm-5.my-auto#variant-selector
+              - var i = 1
+              option(value=i++) Standard
+              option(value=i++) Chess960
+              option(value=i++) King of the Hill
+              option(value=i++) Three-check
+              option(value=i++) Antichess
+              option(value=i++) Atomic
+              option(value=i++) Horde
+              option(value=i++) Racing Kings
+              option(value=i++) Crazyhouse
+
+          .row.align-items-center.justify-content-center.my-3#time-control
+            h6.col-3.col-md-3.my-auto Time Control
+            select.selectpicker.col-8.col-sm-5.my-auto#time-control-selector
+              - var i = 1
+              option(value=i++) Sudden Death
+              optgroup(label="Increment")
+                option(value=i++) Standard
+                option(value=i++) Simple delay
+                option(value=i++) Bronstein delay
+              optgroup(label="Special")
+                option(value=i++) Hourglass
+                option(value=i++) Fixed
+
+          .row.align-items-center.justify-content-center.my-3
+            h6.col-3.col-md-3.my-auto Time
+            .col-8.col-sm-5.my-auto
+              input(id="total-time" data-slider-id='#total-timeSlider' type="text" data-slider-min="0" data-slider-max="34" data-slider-step="1" data-slider-value="9")
+
+          .row.align-items-center.justify-content-center.my-3
+            h6.col-3.col-md-3.my-auto Increment
+            .col-8.col-sm-5.my-auto
+              input(id="increment-time" data-slider-id='#increment-timeSlider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14")
+
+          .row.align-items-center.justify-content-center.my-3
+            .col-10.col-md-7.text-center.btn-group.btn-group-toggle(data-toggle="buttons")
+              label.btn.btn-info.active.focus Random
+                input(type="radio", name="options", id="random", checked)
+              label.btn.btn-info White
+                input(type="radio", name="options", id="white", checked)
+              label.btn.btn-info Black
+                input(type="radio", name="options", id="black", checked)
+
+          .row.align-items-center.justify-content-center.my-3
+            .col-6.col-md-4.text-center    
+              button.btn.btn-outline-info#lobby-create-confirm-btn(type="button", data-dismiss="modal") Create Lobby
+            
+
+
+//- access selection number with element.value
