@@ -10,7 +10,7 @@
           // preset picker
           .row.align-items-center.justify-content-center.my-3
             select.selectpicker.col-7.col-sm-5#preset
-              - var i = 1
+              - var i = 0
               option(value=i++) Custom
               optgroup(label="Bullet")
                 option(value=i++) 1 + 0
@@ -28,7 +28,7 @@
           .row.align-items-center.justify-content-center.my-3#variant
             h6.col-3.col-md-3.my-auto Variant
             select.selectpicker.col-8.col-sm-5.my-auto#variant-selector
-              - var i = 1
+              - var i = 0
               option(value=i++) Standard
               option(value=i++) Chess960
               option(value=i++) King of the Hill
@@ -42,25 +42,26 @@
           .row.align-items-center.justify-content-center.my-3#time-control
             h6.col-3.col-md-3.my-auto Time Control
             select.selectpicker.col-8.col-sm-5.my-auto#time-control-selector
-              - var i = 1
+              - var i = 0
               option(value=i++) Sudden Death
+              option(value=i++) Unlimited
               optgroup(label="Increment")
-                option(value=i++) Standard
+                option(value=i++) Standard increment
                 option(value=i++) Simple delay
                 option(value=i++) Bronstein delay
               optgroup(label="Special")
                 option(value=i++) Hourglass
                 option(value=i++) Fixed
 
-          .row.align-items-center.justify-content-center.my-3
+          .row.align-items-center.justify-content-center.my-3#total-time-slider
             h6.col-3.col-md-3.my-auto Time
             .col-8.col-sm-5.my-auto
-              input(id="total-time" data-slider-id='#total-timeSlider' type="text" data-slider-min="0" data-slider-max="34" data-slider-step="1" data-slider-value="9")
+              input(id="total-time" data-slider-id='#total-timeSlider' type="text" data-slider-min="0" data-slider-max="36" data-slider-step="1" data-slider-value="9")
 
-          .row.align-items-center.justify-content-center.my-3
+          .row.align-items-center.justify-content-center.my-3#increment-slider
             h6.col-3.col-md-3.my-auto Increment
             .col-8.col-sm-5.my-auto
-              input(id="increment-time" data-slider-id='#increment-timeSlider' type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14")
+              input(id="increment-time" data-slider-id='#increment-timeSlider' type="text" data-slider-min="0" data-slider-max="21" data-slider-step="1" data-slider-value="6")
 
           .row.align-items-center.justify-content-center.my-3
             .col-10.col-md-7.text-center.btn-group.btn-group-toggle(data-toggle="buttons")
