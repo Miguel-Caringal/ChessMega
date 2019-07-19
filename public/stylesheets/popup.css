@@ -1,0 +1,20 @@
+.nowrap{
+  white-space: nowrap;
+}
+
+.center-justify{
+  justify-content: center;
+}
+
+.slider-selection {
+	background: #17a2b8;
+}
+
+.slider.slider-horizontal .tooltip.tooltip-main.in,
+.slider.slider-vertical .tooltip.tooltip-main.in { 
+  opacity: 1 !important;
+}
+
+.slider.slider-horizontal{
+  width: inherit !important;
+}

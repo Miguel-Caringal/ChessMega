@@ -8,6 +8,10 @@ function checkmove (gameobj, oldmove) {
       return [false,false];
   }
 
+  if (sameColor(game,move)){
+      return [false,false];
+  }
+
   var islegal = true, promote = "", returnvalues = [];
 
   // ischeck();
